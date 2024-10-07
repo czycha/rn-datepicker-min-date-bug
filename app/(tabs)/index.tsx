@@ -1,92 +1,44 @@
-import { Image, StyleSheet, Button } from "react-native";
-
-import { HelloWave } from "@/components/HelloWave";
-import ParallaxScrollView from "@/components/ParallaxScrollView";
-import { ThemedText } from "@/components/ThemedText";
-import { ThemedView } from "@/components/ThemedView";
-import DateTimePicker from "@react-native-community/datetimepicker";
 import { useState } from "react";
+import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
+import DateTimePicker from "@react-native-community/datetimepicker";
+import { View, Button, Text } from "react-native";
 
-export default function HomeScreen() {
+export default function BugReport() {
   const [show, setShow] = useState(false);
   const [withMaxDate, setWithMaxDate] = useState(true);
+  const [withMinDate, setWithMinDate] = useState(false);
 
   return (
-    <>
-      <ParallaxScrollView
-        headerBackgroundColor={{ light: "#A1CEDC", dark: "#1D3D47" }}
-        headerImage={
-          <Image
-            source={require("@/assets/images/partial-react-logo.png")}
-            style={styles.reactLogo}
-          />
-        }
-      >
-        <ThemedView style={styles.titleContainer}>
-          <ThemedText type="title">Welcome!</ThemedText>
-          <HelloWave />
-        </ThemedView>
-        <ThemedView style={styles.stepContainer}>
-          <ThemedText type="subtitle">Step 1: Click this button</ThemedText>
-          <Button title="Select a date" onPress={() => setShow(true)} />
-        </ThemedView>
-        <ThemedView style={styles.stepContainer}>
-          <ThemedText type="subtitle">
-            Step 2: Try to select a date older than Dec. 31, 1969
-          </ThemedText>
-        </ThemedView>
-        <ThemedView style={styles.stepContainer}>
-          <ThemedText type="subtitle">
-            Step 3: Click this button to disable the maximum date
-          </ThemedText>
+    <SafeAreaProvider>
+      <SafeAreaView>
+        <View style={{ gap: 5 }}>
+          <View>
+            <Text>
+              Max date: {withMaxDate ? "on" : "off"}; Min date:{" "}
+              {withMinDate ? "on" : "off"}
+            </Text>
+          </View>
+          <Button onPress={() => setShow(true)} title="Select a date" />
           <Button
-            title="Disable max date"
-            onPress={() => setWithMaxDate(false)}
+            onPress={() => setWithMaxDate((c) => !c)}
+            title="Toggle max date"
           />
-        </ThemedView>
-        <ThemedView style={styles.stepContainer}>
-          <ThemedText type="subtitle">
-            Step 4: Click this button to try again
-          </ThemedText>
-          <Button title="Select a date" onPress={() => setShow(true)} />
-        </ThemedView>
-        <ThemedView style={styles.stepContainer}>
-          <ThemedText type="subtitle">
-            Step 5: Select a date older than Dec. 31, 1969
-          </ThemedText>
-        </ThemedView>
-      </ParallaxScrollView>
-      {show && (
-        <DateTimePicker
-          testID="dateTimePicker"
-          maximumDate={withMaxDate ? new Date(2006, 1, 1) : undefined}
-          value={new Date(2003, 1, 1)}
-          mode={"date"}
-          onChange={(...args) => {
-            setShow(false);
-            console.log(...args);
-          }}
-        />
-      )}
-    </>
+          <Button
+            onPress={() => setWithMinDate((c) => !c)}
+            title="Toggle min date"
+          />
+
+          {show && (
+            <DateTimePicker
+              maximumDate={withMaxDate ? new Date(2006, 0, 1) : undefined}
+              minimumDate={withMinDate ? new Date(1900, 0, 1) : undefined}
+              value={new Date(1970, 0, 2)}
+              mode={"date"}
+              onChange={() => setShow(false)}
+            />
+          )}
+        </View>
+      </SafeAreaView>
+    </SafeAreaProvider>
   );
 }
-
-const styles = StyleSheet.create({
-  titleContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 8,
-  },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
-  },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: "absolute",
-  },
-});
